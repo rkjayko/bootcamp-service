@@ -1,4 +1,4 @@
-package com.example.bootcamp_service.infrastructure.adapter.in;
+package com.example.bootcamp_service.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

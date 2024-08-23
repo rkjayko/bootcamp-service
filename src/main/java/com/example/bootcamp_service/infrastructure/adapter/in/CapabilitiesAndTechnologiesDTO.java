@@ -1,4 +1,4 @@
-package com.example.bootcamp_service.infrastructure.adapter.out;
+package com.example.bootcamp_service.infrastructure.adapter.in;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,9 +9,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BootcampDTO {
+public class CapabilitiesAndTechnologiesDTO {
+
     private String name;
     private String description;
-    private List<Long> capabilityIds;
+    private List<TechnologyDTO> technologies;
 
 }

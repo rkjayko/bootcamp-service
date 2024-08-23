@@ -1,24 +1,29 @@
 package com.example.bootcamp_service.unit;
 
 import com.example.bootcamp_service.application.mapper.BootcampMapper;
-import com.example.bootcamp_service.application.useCase.BootcampServiceImpl;
-import com.example.bootcamp_service.domain.exception.BootcampException;
-import com.example.bootcamp_service.infrastructure.adapter.out.BootcampDTO;
+import com.example.bootcamp_service.application.service.BootcampServiceImpl;
 import com.example.bootcamp_service.domain.entity.Bootcamp;
-import com.example.bootcamp_service.domain.repository.BootcampRepository;
+import com.example.bootcamp_service.domain.exception.BootcampException;
+import com.example.bootcamp_service.domain.port.BootcampRepository;
+import com.example.bootcamp_service.domain.dto.BootcampDTO;
 import com.example.bootcamp_service.infrastructure.adapter.in.CapabilityServiceAdapter;
+import com.example.bootcamp_service.domain.dto.BootcampResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 class BootcampServiceTest {
@@ -86,5 +91,27 @@ class BootcampServiceTest {
                 .expectErrorMatches(throwable -> throwable instanceof BootcampException &&
                         throwable.getMessage().equals(ERROR_CAPABILITY_MSG))
                 .verify();
+    }
+
+    @Test
+    void testListBootcamps() {
+
+        Bootcamp bootcamp1 = new Bootcamp(1L, BOOTCAMP_NAME, BOOTCAMP_DESCRIPTION);
+        Bootcamp bootcamp2 = new Bootcamp(2L, "Python Bootcamp", "Description 2");
+
+        List<Bootcamp> bootcamps = List.of(bootcamp1, bootcamp2);
+        Page<Bootcamp> page = new PageImpl<>(bootcamps);
+
+        when(bootcampRepository.findAllBy(any(Pageable.class))).thenReturn(Flux.fromIterable(page));
+
+        when(serviceAdapter.getAllCapabilitiesAndTechnologiesById(anyLong()))
+                .thenReturn(Flux.empty());
+
+        Flux<BootcampResponseDTO> result = bootcampService.listBootcamps("asc", 0, 2);
+
+        StepVerifier.create(result)
+                .expectNextMatches(dto -> dto.getName().equals(BOOTCAMP_NAME))
+                .expectNextMatches(dto -> dto.getName().equals("Python Bootcamp"))
+                .verifyComplete();
     }
 }

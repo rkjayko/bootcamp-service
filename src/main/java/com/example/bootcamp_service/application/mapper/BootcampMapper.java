@@ -1,7 +1,7 @@
 package com.example.bootcamp_service.application.mapper;
 
-import com.example.bootcamp_service.infrastructure.adapter.out.BootcampDTO;
 import com.example.bootcamp_service.domain.entity.Bootcamp;
+import com.example.bootcamp_service.domain.dto.BootcampDTO;
 import org.springframework.stereotype.Component;
 
 @Component
